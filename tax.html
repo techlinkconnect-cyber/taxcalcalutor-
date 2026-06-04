@@ -1,0 +1,342 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>ClearTax Style Income Tax Calculator</title>
+    <style>
+        :root {
+            --primary: #0070e0;
+            --primary-hover: #0056b3;
+            --text-dark: #2d3748;
+            --text-light: #718096;
+            --bg-light: #f7fafc;
+            --white: #ffffff;
+            --border: #e2e8f0;
+            --success: #38a169;
+        }
+
+        * {
+            box-sizing: border-box;
+            margin: 0;
+            padding: 0;
+            font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
+        }
+
+        body {
+            background-color: var(--bg-light);
+            color: var(--text-dark);
+            line-height: 1.6;
+            padding: 20px;
+        }
+
+        .container {
+            max-width: 900px;
+            margin: 40px auto;
+            background: var(--white);
+            border-radius: 12px;
+            box-shadow: 0 4px 20px rgba(0, 0, 0, 0.05);
+            overflow: hidden;
+            border: 1px solid var(--border);
+        }
+
+        /* Header styling like ClearTax */
+        header {
+            background: var(--white);
+            padding: 24px 32px;
+            border-bottom: 1px solid var(--border);
+        }
+
+        header h1 {
+            color: var(--primary);
+            font-size: 24px;
+            font-weight: 700;
+            margin-bottom: 4px;
+        }
+
+        header p {
+            color: var(--text-light);
+            font-size: 14px;
+        }
+
+        .layout {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+        }
+
+        @media (max-width: 768px) {
+            .layout {
+                grid-template-columns: 1fr;
+            }
+        }
+
+        /* Input Section */
+        .input-section {
+            padding: 32px;
+            border-right: 1px solid var(--border);
+        }
+
+        .form-group {
+            margin-bottom: 24px;
+        }
+
+        label {
+            display: block;
+            font-weight: 600;
+            margin-bottom: 8px;
+            font-size: 14px;
+            color: var(--text-dark);
+        }
+
+        .input-wrapper {
+            position: relative;
+            display: flex;
+            align-items: center;
+        }
+
+        .currency-symbol {
+            position: absolute;
+            left: 16px;
+            color: var(--text-light);
+            font-weight: 600;
+        }
+
+        input[type="number"] {
+            width: 100%;
+            padding: 12px 12px 12px 36px;
+            border: 1px solid var(--border);
+            border-radius: 6px;
+            font-size: 16px;
+            transition: border-color 0.2s;
+            outline: none;
+        }
+
+        input[type="number"]:focus {
+            border-color: var(--primary);
+            box-shadow: 0 0 0 3px rgba(0, 112, 224, 0.1);
+        }
+
+        .info-text {
+            font-size: 12px;
+            color: var(--text-light);
+            margin-top: 4px;
+        }
+
+        /* Results Section */
+        .result-section {
+            padding: 32px;
+            background-color: #fcfdfd;
+            display: flex;
+            flex-direction: column;
+            justify-content: space-between;
+        }
+
+        .result-header {
+            font-size: 18px;
+            font-weight: 600;
+            margin-bottom: 20px;
+            color: var(--text-dark);
+        }
+
+        .tax-card {
+            background: linear-gradient(135deg, #0070e0, #0056b3);
+            color: var(--white);
+            padding: 24px;
+            border-radius: 8px;
+            margin-bottom: 24px;
+            box-shadow: 0 4px 12px rgba(0, 112, 224, 0.2);
+        }
+
+        .tax-card .label {
+            font-size: 14px;
+            opacity: 0.9;
+            margin-bottom: 4px;
+        }
+
+        .tax-card .amount {
+            font-size: 32px;
+            font-weight: 700;
+        }
+
+        .breakdown-table {
+            width: 100%;
+            border-collapse: collapse;
+            margin-top: 10px;
+        }
+
+        .breakdown-table tr {
+            border-bottom: 1px solid var(--border);
+        }
+
+        .breakdown-table tr:last-child {
+            border-bottom: none;
+        }
+
+        .breakdown-table td {
+            padding: 12px 0;
+            font-size: 14px;
+        }
+
+        .breakdown-table td.val {
+            text-align: right;
+            font-weight: 600;
+            color: var(--text-dark);
+        }
+
+        .breakdown-table td.lbl {
+            color: var(--text-light);
+        }
+
+        .text-success {
+            color: var(--success) !important;
+        }
+    </style>
+</head>
+<body>
+
+<div class="container">
+    <header>
+        <h1>Income Tax Calculator</h1>
+        <p>FY 2025-26 / AY 2026-27 (New Tax Regime)</p>
+    </header>
+
+    <div class="layout">
+        <!-- Inputs Column -->
+        <div class="input-section">
+            <div class="form-group">
+                <label for="grossSalary">Gross Annual Salary</label>
+                <div class="input-wrapper">
+                    <span class="currency-symbol">₹</span>
+                    <input type="number" id="grossSalary" placeholder="e.g. 1200000" value="1000000" oninput="calculateTax()">
+                </div>
+                <p class="info-text">Include basic, HRA, special allowance, etc.</p>
+            </div>
+
+            <div class="form-group">
+                <label for="otherIncome">Income from Other Sources</label>
+                <div class="input-wrapper">
+                    <span class="currency-symbol">₹</span>
+                    <input type="number" id="otherIncome" placeholder="e.g. 50000" value="0" oninput="calculateTax()">
+                </div>
+                <p class="info-text">Interest income, freelancing, rental income etc.</p>
+            </div>
+        </div>
+
+        <!-- Results Column -->
+        <div class="result-section">
+            <div>
+                <div class="result-header">Tax Summary</div>
+                <div class="tax-card">
+                    <div class="label">Estimated Payable Tax</div>
+                    <div class="amount" id="totalTaxPayable">₹0</div>
+                </div>
+
+                <table class="breakdown-table">
+                    <tr>
+                        <td class="lbl">Total Gross Income</td>
+                        <td class="val" id="lblGrossIncome">₹0</td>
+                    </tr>
+                    <tr>
+                        <td class="lbl">Standard Deduction</td>
+                        <td class="val text-success" id="lblStandardDeduction">- ₹75,000</td>
+                    </tr>
+                    <tr>
+                        <td class="lbl">Net Taxable Income</td>
+                        <td class="val" id="lblTaxableIncome">₹0</td>
+                    </tr>
+                    <tr>
+                        <td class="lbl">Base Tax</td>
+                        <td class="val" id="lblBaseTax">₹0</td>
+                    </tr>
+                    <tr>
+                        <td class="lbl">Tax Rebate (u/s 87A)</td>
+                        <td class="val text-success" id="lblRebate">₹0</td>
+                    </tr>
+                    <tr>
+                        <td class="lbl">Health & Education Cess (4%)</td>
+                        <td class="val" id="lblCess">₹0</td>
+                    </tr>
+                </table>
+            </div>
+        </div>
+    </div>
+</div>
+
+<script>
+    function formatCurrency(num) {
+        return '₹' + num.toLocaleString('en-IN');
+    }
+
+    function calculateTax() {
+        // Inputs
+        const grossSalary = parseFloat(document.getElementById('grossSalary').value) || 0;
+        const otherIncome = parseFloat(document.getElementById('otherIncome').value) || 0;
+
+        // Calculations based on New Tax Regime (FY 2025-26 rules)
+        const totalGross = grossSalary + otherIncome;
+        
+        // Standard deduction is ₹75,000 for salaried employees under the new regime
+        const standardDeduction = grossSalary > 0 ? 75000 : 0; 
+        
+        const taxableIncome = Math.max(0, totalGross - standardDeduction);
+
+        let baseTax = 0;
+
+        // New Tax Regime Slabs:
+        // Up to ₹4,00,000: Nil
+        // ₹4,00,001 to ₹8,00,000: 5%
+        // ₹8,00,001 to ₹12,00,000: 10%
+        // ₹12,00,001 to ₹16,00,000: 15%
+        // ₹16,00,001 to ₹20,00,000: 20%
+        // Above ₹20,00,000: 30%
+        
+        if (taxableIncome > 2000000) {
+            baseTax += (taxableIncome - 2000000) * 0.30;
+            baseTax += 400000 * 0.20; // 16L to 20L
+            baseTax += 400000 * 0.15; // 12L to 16L
+            baseTax += 400000 * 0.10; // 8L to 12L
+            baseTax += 400000 * 0.05; // 4L to 8L
+        } else if (taxableIncome > 1600000) {
+            baseTax += (taxableIncome - 1600000) * 0.20;
+            baseTax += 400000 * 0.15;
+            baseTax += 400000 * 0.10;
+            baseTax += 400000 * 0.05;
+        } else if (taxableIncome > 1200000) {
+            baseTax += (taxableIncome - 1200000) * 0.15;
+            baseTax += 400000 * 0.10;
+            baseTax += 400000 * 0.05;
+        } else if (taxableIncome > 800000) {
+            baseTax += (taxableIncome - 800000) * 0.10;
+            baseTax += 400000 * 0.05;
+        } else if (taxableIncome > 400000) {
+            baseTax += (taxableIncome - 400000) * 0.05;
+        }
+
+        // Rebate under Section 87A for New Regime (No tax up to ₹12 Lakhs taxable income)
+        let rebate = 0;
+        if (taxableIncome <= 1200000) {
+            rebate = baseTax;
+        }
+
+        const taxAfterRebate = Math.max(0, baseTax - rebate);
+        
+        // 4% Health and Education Cess
+        const cess = taxAfterRebate * 0.04;
+        const totalTax = taxAfterRebate + cess;
+
+        // Update DOM
+        document.getElementById('lblGrossIncome').innerText = formatCurrency(totalGross);
+        document.getElementById('lblStandardDeduction').innerText = standardDeduction > 0 ? `- ${formatCurrency(standardDeduction)}` : '₹0';
+        document.getElementById('lblTaxableIncome').innerText = formatCurrency(taxableIncome);
+        document.getElementById('lblBaseTax').innerText = formatCurrency(baseTax);
+        document.getElementById('lblRebate').innerText = rebate > 0 ? `- ${formatCurrency(rebate)}` : '₹0';
+        document.getElementById('lblCess').innerText = formatCurrency(cess);
+        document.getElementById('totalTaxPayable').innerText = formatCurrency(Math.round(totalTax));
+    }
+
+    // Run on initial load
+    calculateTax();
+</script>
+
+</body>
+</html>
